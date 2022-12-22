@@ -1,5 +1,7 @@
 {
+  "name": "cron-url",
   "dependencies": {
+    "dotenv": "^16.0.3",
     "node-cron": "^3.0.2"
   }
 }
