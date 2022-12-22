@@ -23,11 +23,6 @@ const jobUrls = process.env.CRON_URLS.split('\n')
     return cron.validate(expression) && validateUrl(url);
   });
 
-console.log({
-  'process.env.CRON_URLS': process.env.CRON_URLS,
-  jobUrls,
-});
-
 for (const {expression, url} of jobUrls) {
   cron.schedule(
     expression,

@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  cron-url:
+    image: nghiepit/cron-url
+    environment:
+      CRON_URLS: |
+        * * * * * * https://www.gstatic.com/generate_204
+    restart: unless-stopped
