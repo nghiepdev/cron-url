@@ -1,5 +1,4 @@
-require('dotenv').config();
-const cron = require('node-cron');
+import cron from 'node-cron';
 
 function validateUrl(url) {
   try {
@@ -10,7 +9,8 @@ function validateUrl(url) {
   }
 }
 
-const jobUrls = process.env.CRON_URLS.split('\n')
+const jobUrls = (process.env.CRON_URLS ?? '')
+  .split('\n')
   .map(urlJob => {
     const [expression] = urlJob.match(/^.*(?=\shttp)/) ?? [];
     const [url] = urlJob.match(/http.*/) ?? [];
@@ -20,7 +20,7 @@ const jobUrls = process.env.CRON_URLS.split('\n')
     };
   })
   .filter(({expression, url}) => {
-    return cron.validate(expression) && validateUrl(url);
+    return validateUrl(url) && cron.validate(expression);
   });
 
 for (const {expression, url} of jobUrls) {
@@ -32,8 +32,10 @@ for (const {expression, url} of jobUrls) {
         `${new Date().toLocaleString()} - ${expression} - Fetching ${url}`
       );
     },
-    {
-      timezone: process.env.TZ ?? 'Asia/Ho_Chi_Minh',
-    }
+    {timezone: process.env.TZ}
   );
+}
+
+if (jobUrls.length === 0) {
+  console.info('No jobs!');
 }

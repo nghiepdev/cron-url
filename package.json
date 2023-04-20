@@ -1,7 +1,13 @@
 {
   "name": "cron-url",
+  "type": "module",
+  "scripts": {
+    "dev": "node index.mjs"
+  },
   "dependencies": {
-    "dotenv": "^16.0.3",
     "node-cron": "^3.0.2"
+  },
+  "engines": {
+    "node": "18"
   }
 }

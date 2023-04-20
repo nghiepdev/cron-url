@@ -19,9 +19,10 @@ services:
   cron-url:
     image: nghiepit/cron-url
     environment:
+      TZ: Asia/Ho_Chi_Minh
       CRON_URLS: |
         */2 * * * * * https://www.gstatic.com/generate_204
-        */2 * * * * * https://www.gstatic.com/generate_204
+        */3 * * * * * https://www.gstatic.com/generate_204
     restart: unless-stopped
 ```
 
