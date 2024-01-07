@@ -3,6 +3,7 @@ import cron from 'node-cron';
 interface JobUrl {
   expression: string;
   url: string;
+  webhook?: string;
 }
 
 function validateUrl(url: string) {
@@ -14,25 +15,43 @@ function validateUrl(url: string) {
   }
 }
 
-const jobUrls = (process.env.CRON_URLS ?? '')
+const jobUrls: JobUrl[] = (process.env.CRON_URLS ?? '')
   .split('\n')
-  .map(urlJob => {
-    const [expression] = urlJob.match(/^.*(?=\shttp)/) ?? [];
-    const [url] = urlJob.match(/http.*/) ?? [];
-    return {
-      expression,
-      url,
-    } satisfies Partial<JobUrl>;
-  })
-  .filter((job): job is JobUrl => {
-    return validateUrl(job.url ?? '') && cron.validate(job.expression ?? '');
-  });
+  .map(job => {
+    const [expression] = job.match(/^.*?(?=\shttp)/) ?? [];
+    const [url, webhook] = job.match(/http[^\s]*/g) ?? [];
 
-for (const {expression, url} of jobUrls) {
+    if (url && expression && validateUrl(url) && cron.validate(expression)) {
+      return {
+        expression,
+        url,
+        webhook: validateUrl(webhook) ? webhook : undefined,
+      } satisfies JobUrl;
+    }
+    return undefined!;
+  })
+  .filter(job => !!job);
+
+for (const {expression, url, webhook} of jobUrls) {
   cron.schedule(
     expression,
     () => {
-      fetch(url);
+      const response = fetch(url, {
+        signal: process.env.FETCH_TIMEOUT
+          ? AbortSignal.timeout(Number(process.env.FETCH_TIMEOUT))
+          : null,
+      });
+      if (webhook) {
+        response.then(res => {
+          console.info(
+            `${new Date().toLocaleString()} - ${expression} - Posting payload to ${webhook}`
+          );
+          fetch(webhook, {
+            method: 'POST',
+            body: res.body,
+          });
+        });
+      }
       console.info(
         `${new Date().toLocaleString()} - ${expression} - Fetching ${url}`
       );

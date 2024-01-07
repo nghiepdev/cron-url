@@ -10,7 +10,7 @@
 $ docker run -e CRON_URLS="* * * * * * https://www.gstatic.com/generate_204" nghiepit/cron-url
 ```
 
-### Multiple tasks
+### Multiple tasks and Webhook which receives payload
 
 ```yml
 # docker-compose.yml
@@ -22,8 +22,7 @@ services:
       TZ: Asia/Ho_Chi_Minh
       CRON_URLS: |
         */2 * * * * * https://www.gstatic.com/generate_204
-        */3 * * * * * https://www.gstatic.com/generate_204
-    restart: unless-stopped
+        */3 * * * * * https://api.domain.com/users https://webhook.domain.net/api/users
 ```
 
 ## Cron Syntax
