@@ -1,6 +1,11 @@
 import cron from 'node-cron';
 
-function validateUrl(url) {
+interface JobUrl {
+  expression: string;
+  url: string;
+}
+
+function validateUrl(url: string) {
   try {
     new URL(url);
     return true;
@@ -17,10 +22,10 @@ const jobUrls = (process.env.CRON_URLS ?? '')
     return {
       expression,
       url,
-    };
+    } satisfies Partial<JobUrl>;
   })
-  .filter(({expression, url}) => {
-    return validateUrl(url) && cron.validate(expression);
+  .filter((job): job is JobUrl => {
+    return validateUrl(job.url ?? '') && cron.validate(job.expression ?? '');
   });
 
 for (const {expression, url} of jobUrls) {

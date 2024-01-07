@@ -7,4 +7,3 @@ services:
       TZ: Asia/Ho_Chi_Minh
       CRON_URLS: |
         * * * * * * https://www.gstatic.com/generate_204
-    restart: unless-stopped

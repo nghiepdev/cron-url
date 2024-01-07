@@ -1,13 +1,18 @@
 {
   "name": "cron-url",
+  "module": "index.ts",
   "type": "module",
   "scripts": {
-    "dev": "node index.mjs"
+    "dev": "bun --watch index.ts"
   },
   "dependencies": {
-    "node-cron": "^3.0.2"
+    "node-cron": "^3.0.3"
   },
-  "engines": {
-    "node": "18"
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/node-cron": "^3.0.11"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
   }
 }
