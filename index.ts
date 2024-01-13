@@ -43,13 +43,18 @@ for (const {expression, url, webhook} of jobUrls) {
       });
       if (webhook) {
         response.then(res => {
-          console.info(
-            `${new Date().toLocaleString()} - ${expression} - Posting payload to ${webhook}`
-          );
+          const contentType =
+            res.headers.get('Content-Type') ?? 'application/json';
           fetch(webhook, {
             method: 'POST',
             body: res.body,
+            headers: {
+              'Content-Type': contentType,
+            },
           });
+          console.info(
+            `${new Date().toLocaleString()} - ${expression} - Posting payload to ${webhook}`
+          );
         });
       }
       console.info(
